@@ -1,0 +1,18 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# Try to find system CURL first
+find_package(CURL QUIET)
+
+if(NOT CURL_FOUND)
+    message(STATUS "System CURL not found, using built CURL")
+    set(CURL_FOUND TRUE)
+    set(CURL_INCLUDE_DIRS "@PACKAGE_CURL_INCLUDE_DIRS@")
+    set(CURL_LIBRARIES "@PACKAGE_CURL_LIBRARIES@")
+endif()
+
+find_dependency(sauron-sdk)
+
+include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-targets.cmake")
+check_required_components("@PROJECT_NAME@") 

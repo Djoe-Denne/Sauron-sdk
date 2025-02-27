@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
 project(sauron-sdk VERSION 1.0.0 LANGUAGES CXX)
 
+option(BUILD_EXAMPLES "Build examples" ON)
+
 # Global settings for runtime library handling
 if(WIN32)
     # Set runtime library directory for all configurations
@@ -25,4 +27,6 @@ add_subdirectory(api-spec/cpp-sdk)
 add_subdirectory(sauron-sdk-curl)
 
 # Add the example
-add_subdirectory(example)
+if(BUILD_EXAMPLES)
+    add_subdirectory(example)
+endif()

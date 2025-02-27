@@ -88,6 +88,14 @@ int main() {
 
         std::cout << "Response: " << response.getResponse() << std::endl;
 
+        // use stream to get the response
+        if(!client.queryStream(sauron::dto::AIQueryRequest("Hello, how are you?", sauron::dto::AIProvider::OPENAI, "gpt-4o-mini"), [](const std::string& chunk, bool is_final) {
+            std::cout << "Chunk: " << chunk << std::endl;
+            return true;
+        })) {
+            std::cerr << "Stream failed" << std::endl;
+        }
+
         // Example: Print client information
         std::cout << "Sauron client initialized successfully!" << std::endl;
 

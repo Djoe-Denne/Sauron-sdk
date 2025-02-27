@@ -38,4 +38,28 @@ target_link_libraries(${PROJECT_NAME}
         sauron-sdk
         sauron-sdk-curl
         nlohmann_json::nlohmann_json
-) 
+)
+
+if(WIN32)
+    # Set runtime output directory to be the same for all targets
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+        RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin
+        RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin
+    )
+
+    # Add custom command to copy DLLs post-build
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        # Copy sauron-sdk-curl
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:sauron-sdk-curl>
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            
+        # Copy libcurl from the build directory
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_BINARY_DIR}/bin/$<IF:$<CONFIG:Debug>,libcurl-d.dll,libcurl.dll>
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            
+        COMMENT "Copying required DLLs to output directory"
+    )
+endif() 

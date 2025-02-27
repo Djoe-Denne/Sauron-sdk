@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(sauron-sdk VERSION 1.0.0 LANGUAGES CXX)
 
-option(BUILD_EXAMPLES "Build examples" ON)
+option(BUILD_EXAMPLES "Build examples" OFF)
 
 # Global settings for runtime library handling
 if(WIN32)

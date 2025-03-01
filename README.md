@@ -67,10 +67,6 @@ target_link_libraries(your_target PRIVATE sauron-sdk-curl::sauron-sdk-curl)
 ### Code Example
 
 ```cpp
-#include <iostream>
-#include <sauron/Sauron.hpp>
-#include <client/http_client_curl.hpp>
-
 int main() {
     try {
         // Print SDK version
@@ -82,19 +78,43 @@ int main() {
         // Create Sauron client
         sauron::client::SauronClient client(std::move(httpClient));
 
-        client.login(sauron::dto::LoginRequest("sk-proj-123456789123456789123456789", sauron::dto::AIProvider::OPENAI));
+        client.login(sauron::dto::LoginRequest("sk-proj-******", sauron::dto::AIProvider::OPENAI));
 
-        auto response = client.query(sauron::dto::AIQueryRequest("Hello, how are you?", sauron::dto::AIProvider::OPENAI, "gpt-4o-mini"));
+       auto response = client.query(sauron::dto::AIQueryRequest("Hello, how are you?", sauron::dto::AIProvider::OPENAI, "gpt-4o-mini"));
 
         std::cout << "Response: " << response.getResponse() << std::endl;
 
+        std::atomic_bool is_done = false;
         // use stream to get the response
-        if(!client.queryStream(sauron::dto::AIQueryRequest("Hello, how are you?", sauron::dto::AIProvider::OPENAI, "gpt-4o-mini"), [](const std::string& chunk, bool is_final) {
+        if(!client.queryStream(sauron::dto::AIQueryRequest("I'm testing your stream api, could you provide me a long enough anwser to test the stream?", sauron::dto::AIProvider::OPENAI, "gpt-4o-mini"), [&is_done](const std::string& chunk, bool is_final) {
             std::cout << "Chunk: " << chunk << std::endl;
+            if(is_final) {
+                is_done = true;
+            }
             return true;
         })) {
             std::cerr << "Stream failed" << std::endl;
         }
+
+        while(!is_done) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+
+        auto responseAlgorithm = client.queryAlgorithm(sauron::dto::AIQueryRequest("solve the k-neirest element problem in java", sauron::dto::AIProvider::OPENAI, "gpt-4o-mini"));
+
+        std::cout << "Response: " << responseAlgorithm.toJson().dump(4) << std::endl;
+
+        // load image in base64 format
+        std::ifstream file("../../data-tests/image.png", std::ios::binary);
+        std::vector<char> buffer(std::istreambuf_iterator<char>(file), {});
+        std::string image_base64 = "data:image/png;base64," + base64_encode(buffer);
+        
+        auto aiAlgorithmWithImageQuery = sauron::dto::AIQueryRequest("solve it in java", sauron::dto::AIProvider::OPENAI, "gpt-4o-mini");
+        aiAlgorithmWithImageQuery.addImage(image_base64);
+
+        auto responseAlgorithmWithImage = client.queryAlgorithm(aiAlgorithmWithImageQuery);
+
+        std::cout << "Response: " << responseAlgorithmWithImage.toJson().dump(4) << std::endl;
 
         // Example: Print client information
         std::cout << "Sauron client initialized successfully!" << std::endl;
@@ -104,7 +124,7 @@ int main() {
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;
     }
-} 
+}  
 ```
 
 ## Dependencies

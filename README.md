@@ -1,145 +1,60 @@
-# Sauron SDK CURL
+# Sauron SDK
 
-A C++ SDK implementation for the Sauron API using libcurl as the HTTP client.
+A comprehensive C++ SDK for building applications with HTTP communication capabilities.
 
-## Prerequisites
+## Components
 
-- CMake 3.15 or higher
-- C++17 compatible compiler
-- Git (for fetching dependencies)
-- libcurl (optional - will be built from source if not found)
+- **sauron-sdk-curl**: HTTP client implementation using libcurl
 
-## Building the SDK
+## Quick Start
 
-1. Clone the repository with submodules:
-```bash
-git clone --recursive https://github.com/yourusername/Sauron-sdk.git
-cd Sauron-sdk
-```
-
-2. Create and navigate to the build directory:
-```bash
-mkdir build && cd build
-```
-
-3. Configure the project with CMake:
-```bash
-cmake ..
-```
-
-4. Build the project:
-```bash
-cmake --build .
-```
-
-### Build Options
-
-- `BUILD_EXAMPLES` (ON by default): Build example applications
-- You can modify these options using `-D` flag with CMake:
-```bash
-cmake .. -DBUILD_EXAMPLES=OFF
-```
-
-## Installation
-
-To install the SDK to your system:
-
-```bash
-cmake --install .
-```
-
-This will install:
-- Header files
-- Library files
-- CMake configuration files
-
-## Usage
-
-### CMake Integration
-
-To use the SDK in your CMake project:
+The easiest way to use Sauron SDK in your project is via CMake's FetchContent:
 
 ```cmake
-find_package(sauron-sdk-curl REQUIRED)
-target_link_libraries(your_target PRIVATE sauron-sdk-curl::sauron-sdk-curl)
+if(NOT SAURON_SDK_FOUND)
+    message(STATUS "System Sauron SDK not found, building from source...")
+    # Find or install Sauron SDK
+    include(FetchContent)
+    FetchContent_Declare(
+        SAURON_SDK
+        GIT_REPOSITORY https://github.com/Djoe-Denne/Sauron-sdk.git
+        GIT_BRANCH master
+    )
+    FetchContent_MakeAvailable(SAURON_SDK)
+    
+    # Variables are automatically set by the SDK
+    # SAURON_SDK_INCLUDE_DIRS - Include directories
+    # SAURON_SDK_LIBRARIES - Libraries to link against (sauron_sdk::curl)
+else()
+    message(STATUS "Found system Sauron SDK: ${SAURON_SDK_LIBRARIES}")
+endif()
+
+# Then link your target
+target_link_libraries(your_target PRIVATE ${SAURON_SDK_LIBRARIES})
+target_include_directories(your_target PRIVATE ${SAURON_SDK_INCLUDE_DIRS})
 ```
 
-### Code Example
+## Features
 
-```cpp
-int main() {
-    try {
-        // Print SDK version
-        std::cout << "Sauron SDK Version: " << sauron::Version::toString() << std::endl;
+- **Automatic Dependency Management**: The SDK handles all dependencies (curl, nlohmann_json) automatically
+- **Easy Integration**: Simple CMake integration with FetchContent support
+- **Cross-Platform**: Works on Windows, macOS, and Linux
 
-        // Create HTTP client
-        auto httpClient = std::make_unique<sauron::client::HttpClientCurl>("localhost:3000");
-        
-        // Create Sauron client
-        sauron::client::SauronClient client(std::move(httpClient));
+## Requirements
 
-        client.login(sauron::dto::LoginRequest("sk-proj-******", sauron::dto::AIProvider::OPENAI));
+- C++17 compatible compiler
+- CMake 3.15 or higher
 
-       auto response = client.query(sauron::dto::AIQueryRequest("Hello, how are you?", sauron::dto::AIProvider::OPENAI, "gpt-4o-mini"));
+## Documentation
 
-        std::cout << "Response: " << response.getResponse() << std::endl;
+For detailed documentation on each component, please refer to:
 
-        std::atomic_bool is_done = false;
-        // use stream to get the response
-        if(!client.queryStream(sauron::dto::AIQueryRequest("I'm testing your stream api, could you provide me a long enough anwser to test the stream?", sauron::dto::AIProvider::OPENAI, "gpt-4o-mini"), [&is_done](const std::string& chunk, bool is_final) {
-            std::cout << "Chunk: " << chunk << std::endl;
-            if(is_final) {
-                is_done = true;
-            }
-            return true;
-        })) {
-            std::cerr << "Stream failed" << std::endl;
-        }
-
-        while(!is_done) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        }
-
-        auto responseAlgorithm = client.queryAlgorithm(sauron::dto::AIQueryRequest("solve the k-neirest element problem in java", sauron::dto::AIProvider::OPENAI, "gpt-4o-mini"));
-
-        std::cout << "Response: " << responseAlgorithm.toJson().dump(4) << std::endl;
-
-        // load image in base64 format
-        std::ifstream file("../../data-tests/image.png", std::ios::binary);
-        std::vector<char> buffer(std::istreambuf_iterator<char>(file), {});
-        std::string image_base64 = "data:image/png;base64," + base64_encode(buffer);
-        
-        auto aiAlgorithmWithImageQuery = sauron::dto::AIQueryRequest("solve it in java", sauron::dto::AIProvider::OPENAI, "gpt-4o-mini");
-        aiAlgorithmWithImageQuery.addImage(image_base64);
-
-        auto responseAlgorithmWithImage = client.queryAlgorithm(aiAlgorithmWithImageQuery);
-
-        std::cout << "Response: " << responseAlgorithmWithImage.toJson().dump(4) << std::endl;
-
-        // Example: Print client information
-        std::cout << "Sauron client initialized successfully!" << std::endl;
-
-        return 0;
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-        return 1;
-    }
-}  
-```
-
-## Dependencies
-
-The SDK automatically manages the following dependencies:
-- libcurl (version 8.5.0 if built from source)
-- nlohmann_json (for JSON handling)
-
-## Building on Windows
-
-When building on Windows:
-- The SDK uses dynamic runtime libraries (MD/MDd)
-- DLL files will be placed in the `bin` directory
-- All runtime dependencies will be copied to the output directory automatically
+- [sauron-sdk-curl Documentation](sauron-sdk-curl/README.md)
 
 ## License
 
-[Add your license information here]
+[MIT License](LICENSE)
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. 

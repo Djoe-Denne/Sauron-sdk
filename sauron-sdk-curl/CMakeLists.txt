@@ -35,6 +35,9 @@ add_library(${PROJECT_NAME}
     include/client/http_client_curl.cpp
 )
 
+# Create an alias target that matches the expected namespace in other projects
+add_library(sauron_sdk::curl ALIAS ${PROJECT_NAME})
+
 # Generate export header
 include(GenerateExportHeader)
 generate_export_header(${PROJECT_NAME}
@@ -69,6 +72,11 @@ if(WIN32)
     )
 endif()
 
+# Set SAURON_SDK_FOUND variable for consumers
+set(SAURON_SDK_FOUND TRUE CACHE INTERNAL "Sauron SDK found")
+set(SAURON_SDK_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include CACHE INTERNAL "Sauron SDK include directories")
+set(SAURON_SDK_LIBRARIES sauron_sdk::curl CACHE INTERNAL "Sauron SDK libraries")
+
 # Installation
 include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME} nlohmann_json
@@ -93,7 +101,7 @@ install(
 install(
     EXPORT ${PROJECT_NAME}-targets
     FILE ${PROJECT_NAME}-targets.cmake
-    NAMESPACE ${PROJECT_NAME}::
+    NAMESPACE sauron_sdk::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 
@@ -120,6 +128,20 @@ install(
         "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake"
         "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+
+# Install SauronSDKConfig.cmake for FetchContent usage
+install(
+    FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/SauronSDKConfig.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SauronSDK
+)
+
+# Install FindSauronSDK.cmake for find_package usage
+install(
+    FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindSauronSDK.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/
 )
 
 message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")

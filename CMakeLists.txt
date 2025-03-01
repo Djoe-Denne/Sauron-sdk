@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(sauron-sdk VERSION 1.0.0 LANGUAGES CXX)
+project(sauron-SDK VERSION 1.0.0 LANGUAGES CXX)
 
 option(BUILD_EXAMPLES "Build examples" OFF)
 
@@ -23,8 +23,20 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 # Add the base SDK first
 add_subdirectory(api-spec/cpp-sdk)
 
-# Add the client SDK
+# Add subdirectories for each component
 add_subdirectory(sauron-sdk-curl)
+
+# Set variables for consumers
+set(SAURON_SDK_FOUND TRUE CACHE INTERNAL "Sauron SDK found")
+set(SAURON_SDK_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/sauron-sdk-curl/include CACHE INTERNAL "Sauron SDK include directories")
+set(SAURON_SDK_LIBRARIES sauron_sdk::curl CACHE INTERNAL "Sauron SDK libraries")
+
+# Install SauronSDKConfig.cmake for FetchContent usage
+install(
+    FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/sauron-sdk-curl/cmake/SauronSDKConfig.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SauronSDK
+) 
 
 # Add the example
 if(BUILD_EXAMPLES)

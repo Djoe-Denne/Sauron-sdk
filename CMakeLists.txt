@@ -1,30 +1,51 @@
 cmake_minimum_required(VERSION 3.15)
-project(sauron-SDK VERSION 1.0.0 LANGUAGES CXX)
+project(Sauron-SDK VERSION 1.0.0 LANGUAGES CXX)
 
-option(BUILD_EXAMPLES "Build examples" OFF)
+option(BUILD_EXAMPLES "Build examples" ON)
 
-# Global settings for runtime library handling
-if(WIN32)
-    # Set runtime library directory for all configurations
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
+# Try to find system CURL first
+find_package(CURL QUIET)
+
+if(NOT CURL_FOUND)
+    message(STATUS "System CURL not found, building from source...")
+    # Find or install CURL
+    include(FetchContent)
+    FetchContent_Declare(
+        CURL
+        GIT_REPOSITORY https://github.com/curl/curl.git
+        GIT_TAG curl-8_5_0
+    )
+    FetchContent_MakeAvailable(CURL)
     
-    # Enable runtime dependency auto-copy for Visual Studio
-    set(CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD 1)
-    
-    # Set proper MSVC runtime library
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+    # Set CURL variables for config file
+    set(CURL_INCLUDE_DIRS ${curl_SOURCE_DIR}/include)
+    set(CURL_LIBRARIES libcurl)
+else()
+    message(STATUS "Found system CURL: ${CURL_LIBRARIES}")
 endif()
 
-# Set the module path to find our CMake files
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+# Try to find nlohmann_json
+find_package(nlohmann_json QUIET)
 
-# Add the base SDK first
-add_subdirectory(api-spec/cpp-sdk)
+if(NOT nlohmann_json_FOUND)
+    message(STATUS "System nlohmann_json not found, building from source...")
+    # Find or install nlohmann_json
+    include(FetchContent)
+    FetchContent_Declare(
+        nlohmann_json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG v3.11.2
+    )
+    FetchContent_MakeAvailable(nlohmann_json)
+else()
+    message(STATUS "Found system nlohmann_json")
+endif()
 
 # Add subdirectories for each component
+add_subdirectory(api-spec/cpp-sdk)
 add_subdirectory(sauron-sdk-curl)
+add_subdirectory(example)
+
 
 # Set variables for consumers
 set(SAURON_SDK_FOUND TRUE CACHE INTERNAL "Sauron SDK found")
@@ -38,7 +59,3 @@ install(
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SauronSDK
 ) 
 
-# Add the example
-if(BUILD_EXAMPLES)
-    add_subdirectory(example)
-endif()

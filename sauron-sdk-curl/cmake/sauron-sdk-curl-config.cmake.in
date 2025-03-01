@@ -3,13 +3,37 @@
 include(CMakeFindDependencyMacro)
 
 # Try to find system CURL first
-find_package(CURL QUIET)
+find_dependency(CURL QUIET)
 
 if(NOT CURL_FOUND)
     message(STATUS "System CURL not found, using built CURL")
     set(CURL_FOUND TRUE)
     set(CURL_INCLUDE_DIRS "@PACKAGE_CURL_INCLUDE_DIRS@")
     set(CURL_LIBRARIES "@PACKAGE_CURL_LIBRARIES@")
+    
+    # If we're using a built CURL, we need to make sure it's available
+    if(NOT TARGET CURL::libcurl)
+        add_library(CURL::libcurl ALIAS ${CURL_LIBRARIES})
+    endif()
+else()
+    message(STATUS "Found system CURL: ${CURL_LIBRARIES}")
+endif()
+
+# Try to find nlohmann_json
+find_dependency(nlohmann_json QUIET)
+
+if(NOT nlohmann_json_FOUND)
+    message(STATUS "System nlohmann_json not found, building from source...")
+    # Find or install nlohmann_json
+    include(FetchContent)
+    FetchContent_Declare(
+        nlohmann_json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG v3.11.2
+    )
+    FetchContent_MakeAvailable(nlohmann_json)
+else()
+    message(STATUS "Found system nlohmann_json")
 endif()
 
 find_dependency(sauron-sdk)

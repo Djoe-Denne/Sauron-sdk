@@ -66,7 +66,7 @@ generate_export_header(${PROJECT_NAME}
 
 
 # Get the path where the content was fetched
-FetchContent_GetProperties(sauron_api SOURCE_DIR SAURON_API_SOURCE_DIR)
+FetchContent_GetProperties(api_spec SOURCE_DIR SAURON_API_SOURCE_DIR)
 # Add the include directory to your project
 include_directories(${SAURON_API_SOURCE_DIR}/cpp-sdk/include)
 # Link against the sauron-sdk target
@@ -94,6 +94,8 @@ endif()
 if(TARGET sauron_sdk::sauron-sdk)
     get_target_property(SAURON_API_INCLUDE_DIRS sauron_sdk::sauron-sdk INTERFACE_INCLUDE_DIRECTORIES)
     target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${SAURON_API_INCLUDE_DIRS}>)
+    # Also add the include directory to the exported targets
+    target_include_directories(${PROJECT_NAME} PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/sauron-api>)
 endif()
 
 # Link dependencies

@@ -48,6 +48,23 @@ else()
     message(STATUS "Found system nlohmann_json")
 endif()
 
+# Fetch sauron-api if not already available
+if(NOT TARGET sauron_sdk::sauron-sdk)
+    message(STATUS "Fetching Sauron API specification...")
+    if(GITHUB_TOKEN)
+        set(GIT_REPOSITORY https://${GITHUB_TOKEN}@github.com/Djoe-Denne/Sauron-api.git)
+    else()
+        set(GIT_REPOSITORY https://github.com/Djoe-Denne/Sauron-api.git)
+    endif()
+    
+    FetchContent_Declare(
+        api_spec
+        GIT_REPOSITORY ${GIT_REPOSITORY}
+        GIT_TAG main
+    )
+    FetchContent_MakeAvailable(api_spec)
+endif()
+
 # Set variables for consumers
 set(SAURON_SDK_FOUND TRUE)
 set(SAURON_SDK_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include")

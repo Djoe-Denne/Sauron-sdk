@@ -96,6 +96,11 @@ set(SAURON_SDK_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/sauron-sdk-curl/include 
 if(DEFINED NLOHMANN_JSON_INCLUDE_DIRS)
     set(SAURON_SDK_INCLUDE_DIRS ${SAURON_SDK_INCLUDE_DIRS} ${NLOHMANN_JSON_INCLUDE_DIRS} CACHE INTERNAL "Sauron SDK include directories")
 endif()
+
+# Add sauron-api include directories
+FetchContent_GetProperties(api_spec SOURCE_DIR SAURON_API_SOURCE_DIR)
+set(SAURON_SDK_INCLUDE_DIRS ${SAURON_SDK_INCLUDE_DIRS} ${SAURON_API_SOURCE_DIR}/cpp-sdk/include CACHE INTERNAL "Sauron SDK include directories")
+
 set(SAURON_SDK_LIBRARIES sauron_sdk::curl CACHE INTERNAL "Sauron SDK libraries")
 
 # Install SauronSDKConfig.cmake for FetchContent usage

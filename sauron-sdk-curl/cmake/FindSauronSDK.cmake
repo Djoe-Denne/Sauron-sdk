@@ -73,5 +73,37 @@ else()
     endif()
 endif()
 
+# Fetch sauron-api if not already available
+if(NOT TARGET sauron_sdk::sauron-sdk)
+    message(STATUS "Fetching Sauron API specification...")
+    if(GITHUB_TOKEN)
+        set(GIT_REPOSITORY https://${GITHUB_TOKEN}@github.com/Djoe-Denne/Sauron-api.git)
+    else()
+        set(GIT_REPOSITORY https://github.com/Djoe-Denne/Sauron-api.git)
+    endif()
+    
+    include(FetchContent)
+    FetchContent_Declare(
+        api_spec
+        GIT_REPOSITORY ${GIT_REPOSITORY}
+        GIT_TAG main
+    )
+    FetchContent_MakeAvailable(api_spec)
+    
+    # Set variables for consumers
+    set(SAURON_SDK_FOUND TRUE)
+    set(SAURON_SDK_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/../include)
+    if(DEFINED NLOHMANN_JSON_INCLUDE_DIRS)
+        set(SAURON_SDK_INCLUDE_DIRS ${SAURON_SDK_INCLUDE_DIRS} ${NLOHMANN_JSON_INCLUDE_DIRS})
+    endif()
+    
+    # Get the path where the content was fetched
+    FetchContent_GetProperties(api_spec SOURCE_DIR SAURON_API_SOURCE_DIR)
+    set(SAURON_SDK_INCLUDE_DIRS ${SAURON_SDK_INCLUDE_DIRS} ${SAURON_API_SOURCE_DIR}/cpp-sdk/include)
+    
+    set(SAURON_SDK_LIBRARIES sauron_sdk::curl)
+    return()
+endif()
+
 # Not found
 set(SAURON_SDK_FOUND FALSE) 

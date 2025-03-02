@@ -1,0 +1,72 @@
+# Main workflow for building and checking code quality
+name: Build
+
+# Trigger the workflow on push and pull request events for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# Prevent multiple workflows from running simultaneously on the same ref
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Global environment variables
+env:
+  FORCE_COLOR: 1  # Enable colored output in logs
+  TERM: xterm-256color  # Terminal type for better formatting
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Dependencies (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          choco install ninja
+
+      - name: Install Dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install ninja
+
+      - name: Configure CMake
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install -G Ninja
+
+      - name: Build Library
+        run: cmake --build build --config Release --target install
+
+      - name: Package Artifacts (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          cd install
+          7z a ../mylib-windows.zip *
+
+      - name: Package Artifacts (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          cd install
+          tar -czf ../mylib-macos.tar.gz *
+
+      - name: Upload Artifact to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            mylib-windows.zip
+            mylib-macos.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

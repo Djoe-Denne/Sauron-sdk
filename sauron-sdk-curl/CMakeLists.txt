@@ -90,6 +90,12 @@ if(TARGET nlohmann_json::nlohmann_json)
     target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${NLOHMANN_JSON_INCLUDE_DIRS}>)
 endif()
 
+# Make sauron-api headers available to consumers
+if(TARGET sauron_sdk::sauron-sdk)
+    get_target_property(SAURON_API_INCLUDE_DIRS sauron_sdk::sauron-sdk INTERFACE_INCLUDE_DIRECTORIES)
+    target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${SAURON_API_INCLUDE_DIRS}>)
+endif()
+
 # Link dependencies
 target_link_libraries(${PROJECT_NAME}
     PUBLIC

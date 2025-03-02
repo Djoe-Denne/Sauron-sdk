@@ -10,6 +10,24 @@ if(NOT CURL_FOUND)
     message(STATUS "System CURL not found, building from source...")
     # Find or install CURL
     include(FetchContent)
+    
+    # Set CURL build options to minimize what gets built
+    set(BUILD_CURL_EXE OFF CACHE BOOL "Don't build curl executable")
+    set(BUILD_TESTING OFF CACHE BOOL "Don't build tests")
+    set(CURL_DISABLE_DICT ON CACHE BOOL "Disable DICT protocol")
+    set(CURL_DISABLE_FILE ON CACHE BOOL "Disable FILE protocol")
+    set(CURL_DISABLE_FTP ON CACHE BOOL "Disable FTP protocol")
+    set(CURL_DISABLE_GOPHER ON CACHE BOOL "Disable Gopher protocol")
+    set(CURL_DISABLE_IMAP ON CACHE BOOL "Disable IMAP protocol")
+    set(CURL_DISABLE_LDAP ON CACHE BOOL "Disable LDAP protocol")
+    set(CURL_DISABLE_LDAPS ON CACHE BOOL "Disable LDAPS protocol")
+    set(CURL_DISABLE_POP3 ON CACHE BOOL "Disable POP3 protocol")
+    set(CURL_DISABLE_RTSP ON CACHE BOOL "Disable RTSP protocol")
+    set(CURL_DISABLE_SMB ON CACHE BOOL "Disable SMB protocol")
+    set(CURL_DISABLE_SMTP ON CACHE BOOL "Disable SMTP protocol")
+    set(CURL_DISABLE_TELNET ON CACHE BOOL "Disable TELNET protocol")
+    set(CURL_DISABLE_TFTP ON CACHE BOOL "Disable TFTP protocol")
+    
     FetchContent_Declare(
         CURL
         GIT_REPOSITORY https://github.com/curl/curl.git

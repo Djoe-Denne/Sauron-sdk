@@ -57,7 +57,7 @@ if(WIN32)
             
         # Copy libcurl from the build directory
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_BINARY_DIR}/bin/$<IF:$<CONFIG:Debug>,libcurl-d.dll,libcurl.dll>
+            ${CURL_BINARY_DIR}/lib/$<IF:$<CONFIG:Debug>,libcurl-d.dll,libcurl.dll>
             $<TARGET_FILE_DIR:${PROJECT_NAME}>
             
         COMMENT "Copying required DLLs to output directory"

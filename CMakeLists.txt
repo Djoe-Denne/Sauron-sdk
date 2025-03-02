@@ -44,7 +44,9 @@ endif()
 # Add subdirectories for each component
 add_subdirectory(api-spec/cpp-sdk)
 add_subdirectory(sauron-sdk-curl)
-add_subdirectory(example)
+if(BUILD_EXAMPLES)  
+    add_subdirectory(example)
+endif()
 
 
 # Set variables for consumers

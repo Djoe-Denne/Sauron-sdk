@@ -5,21 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Find or install nlohmann_json
-find_package(nlohmann_json QUIET)
-if (NOT nlohmann_json_FOUND)
-    include(FetchContent)
-    message(STATUS "Fetching nlohmann_json")
-    FetchContent_Declare(
-        nlohmann_json
-        GIT_REPOSITORY https://github.com/nlohmann/json.git
-        GIT_TAG v3.11.3
-    )
-    message(STATUS "Fetching nlohmann_json done")
-    FetchContent_MakeAvailable(nlohmann_json)
-    message(STATUS "nlohmann_json found")
-endif()
-
 # Add executable
 add_executable(${PROJECT_NAME}
     main.cpp

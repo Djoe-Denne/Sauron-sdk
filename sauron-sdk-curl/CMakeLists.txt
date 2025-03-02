@@ -64,6 +64,15 @@ generate_export_header(${PROJECT_NAME}
     EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/include/sauron_sdk_curl_export.h
 )
 
+
+# Get the path where the content was fetched
+FetchContent_GetProperties(sauron_api SOURCE_DIR SAURON_API_SOURCE_DIR)
+# Add the include directory to your project
+include_directories(${SAURON_API_SOURCE_DIR}/cpp-sdk/include)
+# Link against the sauron-sdk target
+# This assumes your target is already defined above
+target_link_libraries(${PROJECT_NAME} PRIVATE sauron_sdk::sauron-sdk)
+
 # Include directories
 target_include_directories(${PROJECT_NAME}
     PUBLIC

@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.15)
 project(Sauron-SDK VERSION 1.0.0 LANGUAGES CXX)
 
-option(BUILD_EXAMPLES "Build examples" OFF)
+option(BUILD_EXAMPLES "Build examples" ON)
+
+# Include FetchContent module
+include(FetchContent)
 
 # Try to find system CURL first
 find_package(CURL QUIET)
@@ -9,7 +12,6 @@ find_package(CURL QUIET)
 if(NOT CURL_FOUND)
     message(STATUS "System CURL not found, building from source...")
     # Find or install CURL
-    include(FetchContent)
     
     # Set CURL build options to minimize what gets built
     set(BUILD_CURL_EXE OFF CACHE BOOL "Don't build curl executable")
@@ -48,7 +50,6 @@ find_package(nlohmann_json QUIET)
 if(NOT nlohmann_json_FOUND)
     message(STATUS "System nlohmann_json not found, building from source...")
     # Find or install nlohmann_json
-    include(FetchContent)
     FetchContent_Declare(
         nlohmann_json
         GIT_REPOSITORY https://github.com/nlohmann/json.git
@@ -66,8 +67,23 @@ if(TARGET nlohmann_json::nlohmann_json)
     set(NLOHMANN_JSON_INCLUDE_DIRS ${NLOHMANN_JSON_INCLUDE_DIRS} CACHE INTERNAL "nlohmann_json include directories")
 endif()
 
-# Add subdirectories for each component
-add_subdirectory(api-spec/cpp-sdk)
+
+if(GITHUB_TOKEN)
+    set(GIT_REPOSITORY https://${GITHUB_TOKEN}@github.com/Djoe-Denne/Sauron-api.git)
+else()
+    set(GIT_REPOSITORY https://github.com/Djoe-Denne/Sauron-api.git)
+endif()
+# Fetch API spec from Git repository instead of using submodule
+message(STATUS "Fetching Sauron API specification...")
+# Set a variable to indicate that we're building as part of the main project
+set(SAURON_SDK_MAIN_PROJECT ON CACHE INTERNAL "Building as part of the main Sauron SDK project")
+FetchContent_Declare(
+    api_spec
+    GIT_REPOSITORY ${GIT_REPOSITORY}
+    GIT_TAG main
+)
+FetchContent_MakeAvailable(api_spec)
+
 add_subdirectory(sauron-sdk-curl)
 if(BUILD_EXAMPLES)  
     add_subdirectory(example)

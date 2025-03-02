@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(Sauron-SDK VERSION 1.0.0 LANGUAGES CXX)
 
-option(BUILD_EXAMPLES "Build examples" ON)
+option(BUILD_EXAMPLES "Build examples" OFF)
 
 # Try to find system CURL first
 find_package(CURL QUIET)

@@ -69,6 +69,15 @@ You don't need to manually install or configure these dependencies. The SDK will
 1. First try to find them on your system
 2. If not found, automatically download and build them from source
 
+**Note**: The nlohmann_json headers are automatically made available to your project when you use Sauron SDK. You can directly include and use them in your code without any additional configuration:
+
+```cpp
+#include <nlohmann/json.hpp>
+
+// Use nlohmann::json in your code
+nlohmann::json j = {{"name", "value"}};
+```
+
 ## Building from Source
 
 If you want to build and install the SDK manually:

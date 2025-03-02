@@ -37,6 +37,13 @@ if(NOT nlohmann_json_FOUND)
         GIT_TAG v3.11.2
     )
     FetchContent_MakeAvailable(nlohmann_json)
+    
+    # Make nlohmann_json available to consumers
+    if(TARGET nlohmann_json::nlohmann_json)
+        get_target_property(NLOHMANN_JSON_INCLUDE_DIRS nlohmann_json::nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
+        # Store for later use
+        set(NLOHMANN_JSON_INCLUDE_DIRS ${NLOHMANN_JSON_INCLUDE_DIRS} CACHE INTERNAL "nlohmann_json include directories")
+    endif()
 else()
     message(STATUS "Found system nlohmann_json")
 endif()
@@ -44,6 +51,9 @@ endif()
 # Set variables for consumers
 set(SAURON_SDK_FOUND TRUE)
 set(SAURON_SDK_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include")
+if(DEFINED NLOHMANN_JSON_INCLUDE_DIRS)
+    set(SAURON_SDK_INCLUDE_DIRS ${SAURON_SDK_INCLUDE_DIRS} ${NLOHMANN_JSON_INCLUDE_DIRS})
+endif()
 set(SAURON_SDK_LIBRARIES sauron_sdk::curl)
 
 # Include the targets file if it exists (for installation)

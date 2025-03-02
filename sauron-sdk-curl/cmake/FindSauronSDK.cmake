@@ -61,8 +61,16 @@ if(NOT nlohmann_json_FOUND)
         GIT_TAG v3.11.2
     )
     FetchContent_MakeAvailable(nlohmann_json)
+    
+    # Make nlohmann_json available to consumers
+    if(TARGET nlohmann_json::nlohmann_json)
+        get_target_property(NLOHMANN_JSON_INCLUDE_DIRS nlohmann_json::nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
+    endif()
 else()
     message(STATUS "Found system nlohmann_json")
+    if(TARGET nlohmann_json::nlohmann_json)
+        get_target_property(NLOHMANN_JSON_INCLUDE_DIRS nlohmann_json::nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
+    endif()
 endif()
 
 # Not found

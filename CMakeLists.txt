@@ -37,8 +37,15 @@ if(NOT nlohmann_json_FOUND)
         GIT_TAG v3.11.2
     )
     FetchContent_MakeAvailable(nlohmann_json)
+
 else()
     message(STATUS "Found system nlohmann_json")
+endif()
+# Make nlohmann_json available to consumers
+if(TARGET nlohmann_json::nlohmann_json)
+    get_target_property(NLOHMANN_JSON_INCLUDE_DIRS nlohmann_json::nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
+    # Store for later use
+    set(NLOHMANN_JSON_INCLUDE_DIRS ${NLOHMANN_JSON_INCLUDE_DIRS} CACHE INTERNAL "nlohmann_json include directories")
 endif()
 
 # Add subdirectories for each component
@@ -52,6 +59,9 @@ endif()
 # Set variables for consumers
 set(SAURON_SDK_FOUND TRUE CACHE INTERNAL "Sauron SDK found")
 set(SAURON_SDK_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/sauron-sdk-curl/include CACHE INTERNAL "Sauron SDK include directories")
+if(DEFINED NLOHMANN_JSON_INCLUDE_DIRS)
+    set(SAURON_SDK_INCLUDE_DIRS ${SAURON_SDK_INCLUDE_DIRS} ${NLOHMANN_JSON_INCLUDE_DIRS} CACHE INTERNAL "Sauron SDK include directories")
+endif()
 set(SAURON_SDK_LIBRARIES sauron_sdk::curl CACHE INTERNAL "Sauron SDK libraries")
 
 # Install SauronSDKConfig.cmake for FetchContent usage

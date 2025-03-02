@@ -57,6 +57,12 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
+# Make nlohmann_json headers available to consumers
+if(TARGET nlohmann_json::nlohmann_json)
+    get_target_property(NLOHMANN_JSON_INCLUDE_DIRS nlohmann_json::nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
+    target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${NLOHMANN_JSON_INCLUDE_DIRS}>)
+endif()
+
 # Link dependencies
 target_link_libraries(${PROJECT_NAME}
     PUBLIC

@@ -44,10 +44,14 @@ jobs:
           brew install ninja
 
       - name: Configure CMake
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install -G Ninja
 
       - name: Build Library
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: cmake --build build --config Release --target install
 
       - name: Package Artifacts (Windows)

@@ -49,8 +49,8 @@ endif()
 
 # Add library
 add_library(${PROJECT_NAME}
-    include/client/http_client_curl.hpp
-    include/client/http_client_curl.cpp
+    include/sauron/client/http_client_curl.hpp
+    include/sauron/client/http_client_curl.cpp
 )
 
 # Create an alias target that matches the expected namespace in other projects

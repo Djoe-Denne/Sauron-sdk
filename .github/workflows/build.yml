@@ -70,11 +70,11 @@ jobs:
         with:
           name: sauron-sdk-curl_${{ matrix.os }}-${{ runner.arch }}-latest
           path: |
-            ${{github.workspace}}/build/bin/**/*
-            ${{github.workspace}}/build_deps/api_spec-src/cpp-sdk/include/**/*.h
-            ${{github.workspace}}/build_deps/api_spec-src/cpp-sdk/include/**/*.hpp
-            ${{github.workspace}}/sauron-sdk-curl/include/**/*.h
-            ${{github.workspace}}/sauron-sdk-curl/include/**/*.hpp
+            ${{github.workspace}}/bin/**/*
+            ${{github.workspace}}/_deps/api_spec-src/cpp-sdk/include/**/*.h
+            ${{github.workspace}}/_deps/api_spec-src/cpp-sdk/include/**/*.hpp
+            ${{github.workspace}}/../sauron-sdk-curl/include/**/*.h
+            ${{github.workspace}}/../sauron-sdk-curl/include/**/*.hpp
           if-no-files-found: error
 
   cleanup-artifacts:

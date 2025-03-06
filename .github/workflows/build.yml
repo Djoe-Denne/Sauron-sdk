@@ -71,11 +71,7 @@ jobs:
           name: sauron-sdk-curl_${{ matrix.os }}-${{ runner.arch }}-latest
           overwrite: true
           path: |
-            build/bin/*.dll
-            build/bin/*.lib
-            build/bin/*.dylib
-            build/bin/*.so
-            build/bin/*.a
+            build/sauron-sdk-curl/Release/*.*
             build/_deps/api_spec-src/cpp-sdk/include/**/*.h
             build/_deps/api_spec-src/cpp-sdk/include/**/*.hpp
             sauron-sdk-curl/include/**/*.h

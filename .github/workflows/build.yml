@@ -74,6 +74,9 @@ jobs:
             build/sauron-sdk-curl/Release/*.*
             build/_deps/api_spec-src/cpp-sdk/include/**/*.h
             build/_deps/api_spec-src/cpp-sdk/include/**/*.hpp
+            build/_deps/curl-build/lib/libcurl.*
+            sauron-sdk-curl/include/**/*.h
+            sauron-sdk-curl/include/**/*.hpp
             D:\a\Sauron-sdk\Sauron-sdk\sauron-sdk-curl\include\sauron\client\http_client_curl.hpp
           if-no-files-found: error
 

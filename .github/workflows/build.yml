@@ -36,12 +36,6 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-    
-      - name: find http_client_curl.hpp
-        if: matrix.os == 'windows-latest'
-        shell: pwsh
-        run: Get-ChildItem -Path "." -Filter "http_client_curl.hpp" -Recurse
-
       - name: Set up CMake
         uses: lukka/get-cmake@latest
 
@@ -80,8 +74,7 @@ jobs:
             build/sauron-sdk-curl/Release/*.*
             build/_deps/api_spec-src/cpp-sdk/include/**/*.h
             build/_deps/api_spec-src/cpp-sdk/include/**/*.hpp
-            sauron-sdk-curl/include/**/*.h
-            sauron-sdk-curl/include/**/*.hpp
+            D:\a\Sauron-sdk\Sauron-sdk\sauron-sdk-curl\include\sauron\client\http_client_curl.hpp
           if-no-files-found: error
 
 

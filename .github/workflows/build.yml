@@ -17,6 +17,8 @@ concurrency:
 env:
   FORCE_COLOR: 1  # Enable colored output in logs
   TERM: xterm-256color  # Terminal type for better formatting
+  BUILD_TYPE: Release
+  GITHUB_TOKEN: ${{ secrets.PALANTIR_GHA }}
 
 jobs:
   build:
@@ -25,52 +27,63 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest] #, macos-latest]
+        os: [windows-latest, macos-latest]
+        configuration: [Release]
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
         with:
+          fetch-depth: 0
           submodules: recursive
 
-      - name: Install Dependencies (Windows)
-        if: runner.os == 'Windows'
+      - name: Set up CMake
+        uses: lukka/get-cmake@latest
+
+      - name: Create Build Environment
+        run: cmake -E make_directory ${{github.workspace}}/build
+
+      - name: Configure CMake (Windows)
+        if: matrix.os == 'windows-latest'
+        working-directory: ${{github.workspace}}/build
+        shell: pwsh
         run: |
-          choco install ninja
+          cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} `
+                  -DBUILD_EXAMPLES=OFF `
+                  -DGITHUB_TOKEN=${{env.GITHUB_TOKEN}}
 
-      - name: Install Dependencies (macOS)
-        if: runner.os == 'macOS'
+      - name: Configure CMake (macOS)
+        if: matrix.os == 'macos-latest'
+        working-directory: ${{github.workspace}}/build
+        shell: bash
         run: |
-          brew install ninja
+          cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
+                  -DBUILD_EXAMPLES=OFF \
+                  -DGITHUB_TOKEN=${{env.GITHUB_TOKEN}}
 
-      - name: Configure CMake
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install -G Ninja
+      - name: Build
+        working-directory: ${{github.workspace}}/build
+        shell: bash
+        run: cmake --build . --config ${{env.BUILD_TYPE}} --parallel
 
-      - name: Build Library
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: cmake --build build --config Release --target install
-
-      - name: Package Artifacts (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          cd install
-          7z a ../mylib-windows.zip *
-
-      - name: Package Artifacts (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          cd install
-          tar -czf ../mylib-macos.tar.gz *
-
-      - name: Upload Artifact to Release
-        uses: softprops/action-gh-release@v2
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
         with:
-          files: |
-            mylib-windows.zip
-            mylib-macos.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: sauron-sdk-curl_${{ matrix.os }}-${{ runner.arch }}-latest
+          path: |
+            ${{github.workspace}}/build/bin/**/*
+            ${{github.workspace}}/build_deps/api_spec-src/cpp-sdk/include/**/*.h
+            ${{github.workspace}}/build_deps/api_spec-src/cpp-sdk/include/**/*.hpp
+            ${{github.workspace}}/sauron-sdk-curl/include/**/*.h
+            ${{github.workspace}}/sauron-sdk-curl/include/**/*.hpp
+          if-no-files-found: error
+
+  cleanup-artifacts:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    steps:
+      - name: Delete old artifacts
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: sauron-sdk-curl_*
+          failOnError: false

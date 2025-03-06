@@ -38,7 +38,9 @@ jobs:
 
     
       - name: find http_client_curl.hpp
-        run: find ${{github.workspace}} -name "http_client_curl.hpp"
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: Get-ChildItem -Path "." -Filter "http_client_curl.hpp" -Recurse
 
       - name: Set up CMake
         uses: lukka/get-cmake@latest

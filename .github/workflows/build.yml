@@ -69,21 +69,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sauron-sdk-curl_${{ matrix.os }}-${{ runner.arch }}-latest
+          overwrite: true
           path: |
-            ${{github.workspace}}/bin/**/*
-            ${{github.workspace}}/_deps/api_spec-src/cpp-sdk/include/**/*.h
-            ${{github.workspace}}/_deps/api_spec-src/cpp-sdk/include/**/*.hpp
-            ${{github.workspace}}/../sauron-sdk-curl/include/**/*.h
-            ${{github.workspace}}/../sauron-sdk-curl/include/**/*.hpp
+            build/bin/**/*
+            build/_deps/api_spec-src/cpp-sdk/include/**/*.h
+            build/_deps/api_spec-src/cpp-sdk/include/**/*.hpp
+            sauron-sdk-curl/include/**/*.h
+            sauron-sdk-curl/include/**/*.hpp
           if-no-files-found: error
 
-  cleanup-artifacts:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    steps:
-      - name: Delete old artifacts
-        uses: geekyeggo/delete-artifact@v2
-        with:
-          name: sauron-sdk-curl_*
-          failOnError: false
+

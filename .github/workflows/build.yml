@@ -76,10 +76,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path artifact-src/api_spec
           Copy-Item "build/_deps/api_spec-src/**/*.*" -Destination artifact-src/api_spec
           New-Item -ItemType Directory -Force -Path artifact-src/sauron-sdk-curl
-          Copy-Item "sauron-sdk-curl/include/**/*.h" -Destination artifact-src/sauron-sdk-curl/
-          Copy-Item "sauron-sdk-curl/include/**/*.hpp" -Destination artifact-src/sauron-sdk-curl/
-          Copy-Item "sauron-sdk-curl/src/**/*.cpp" -Destination artifact-src/sauron-sdk-curl/
-          Copy-Item "sauron-sdk-curl/CMakeLists.txt" -Destination artifact-src/sauron-sdk-curl/
+          Copy-Item "sauron-sdk-curl/**/*.*" -Destination artifact-src/sauron-sdk-curl/
           Copy-Item "D:/a/Sauron-sdk/Sauron-sdk/sauron-sdk-curl/include/sauron/client/http_client_curl.hpp" -Destination artifact-src/sauron-sdk-curl/include/sauron/client/http_client_curl.hpp
 
       - name: Prepare binary artifacts

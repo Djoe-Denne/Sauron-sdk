@@ -69,6 +69,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
+          Get-ChildItem -Recurse -Include *.hpp | Format-Table -AutoSize
           New-Item -ItemType Directory -Force -Path artifact-bin
           Copy-Item "build/sauron-sdk-curl/Release/*.dll" -Destination artifact-bin/
           Copy-Item "build/_deps/curl-build/lib/Release/libcurl.*" -Destination artifact-bin/
@@ -76,7 +77,6 @@ jobs:
           New-Item -ItemType Directory -Force -Path artifact-src/api_spec
           Copy-Item "build/_deps/api_spec-src" -Destination artifact-src/api_spec
           New-Item -ItemType Directory -Force -Path artifact-src/sauron-sdk-curl
-          # Copy the sauron-sdk-curl directory to the artifact-src directory
           Copy-Item "." -Destination artifact-src/sauron-sdk-curl
 
       - name: Prepare artifacts for macOS

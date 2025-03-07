@@ -73,7 +73,7 @@ jobs:
           Copy-Item "build/sauron-sdk-curl/Release/*.*" -Destination artifact-bin/
           Copy-Item "build/_deps/curl-build/lib/Release/libcurl.*" -Destination artifact-bin/
           New-Item -ItemType Directory -Force -Path artifact-src
-          Copy-Item ".\build\_deps\api_spec-src\" -Recurse -Destination artifact-src\api_sepc
+          Copy-Item ".\build\_deps\api_spec-src\" -Recurse -Destination artifact-src\api_spec
           Copy-Item ".\sauron-sdk-curl\" -Recurse -Destination artifact-src\sauron-sdk-curl
           Copy-Item ".\build\sauron-sdk-curl\include\sauron_sdk_curl_export.h" -Recurse -Destination artifact-src\sauron-sdk-curl\include
 

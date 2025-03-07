@@ -65,26 +65,45 @@ jobs:
         shell: bash
         run: cmake --build . --config ${{env.BUILD_TYPE}} --parallel
 
-      - name: Find curl lib
+      - name: Prepare binary artifacts
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
-          Get-ChildItem -Path "." -Filter "*.dll" -Recurse
+          New-Item -ItemType Directory -Force -Path artifact-bin
+          Copy-Item "build/sauron-sdk-curl/Release/*.dll" -Destination artifact-bin/
+          Copy-Item "build/_deps/curl-build/lib/Release/libcurl.*" -Destination artifact-bin/
+          New-Item -ItemType Directory -Force -Path artifact-src
+          New-Item -ItemType Directory -Force -Path artifact-src/api_spec
+          Copy-Item "build/_deps/api_spec-src/**/*.*" -Destination artifact-src/api_spec
+          New-Item -ItemType Directory -Force -Path artifact-src/sauron-sdk-curl
+          Copy-Item "sauron-sdk-curl/include/**/*.h" -Destination artifact-src/sauron-sdk-curl/
+          Copy-Item "sauron-sdk-curl/include/**/*.hpp" -Destination artifact-src/sauron-sdk-curl/
+          Copy-Item "sauron-sdk-curl/src/**/*.cpp" -Destination artifact-src/sauron-sdk-curl/
+          Copy-Item "sauron-sdk-curl/CMakeLists.txt" -Destination artifact-src/sauron-sdk-curl/
+          Copy-Item "D:/a/Sauron-sdk/Sauron-sdk/sauron-sdk-curl/include/sauron/client/http_client_curl.hpp" -Destination artifact-src/sauron-sdk-curl/include/sauron/client/http_client_curl.hpp
 
+      - name: Prepare binary artifacts
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: |
+          mkdir -p artifact-bin
+          cp build/sauron-sdk-curl/Release/*.dylib artifact-bin/
+          cp build/_deps/curl-build/lib/Release/libcurl.* artifact-bin/
 
-      - name: Upload artifacts
+      - name: Upload binary artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: sauron-sdk-curl_${{ matrix.os }}-${{ runner.arch }}-latest
+          name: sauron-sdk-curl-bin_${{ matrix.os }}-${{ runner.arch }}-latest
           overwrite: true
-          path: |
-            build/sauron-sdk-curl/Release/*.*
-            build/_deps/api_spec-src/cpp-sdk/include/**/*.h
-            build/_deps/api_spec-src/cpp-sdk/include/**/*.hpp
-            build/_deps/curl-build/lib/libcurl.*
-            sauron-sdk-curl/include/**/*.h
-            sauron-sdk-curl/include/**/*.hpp
-            D:\a\Sauron-sdk\Sauron-sdk\sauron-sdk-curl\include\sauron\client\http_client_curl.hpp
+          path: artifact-bin
+          if-no-files-found: error
+
+      - name: Upload source artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sauron-sdk-curl-src_${{ matrix.os }}-${{ runner.arch }}-latest
+          overwrite: true
+          path: artifact-src
           if-no-files-found: error
 
 

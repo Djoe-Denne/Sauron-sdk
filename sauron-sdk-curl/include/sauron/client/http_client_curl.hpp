@@ -1,10 +1,12 @@
 #pragma once
 
 #include <sauron/client/HttpClient.hpp>
-#include <curl/curl.h>
 #include <map>
 #include <mutex>
 #include "sauron_sdk_curl_export.h"
+
+typedef void CURL;
+struct curl_slist;
 
 namespace sauron {
 namespace client {

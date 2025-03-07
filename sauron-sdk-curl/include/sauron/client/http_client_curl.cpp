@@ -1,4 +1,6 @@
 #include "http_client_curl.hpp"
+
+#include <curl/curl.h>
 #include <stdexcept>
 #include <sstream>
 

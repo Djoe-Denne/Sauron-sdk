@@ -102,4 +102,35 @@ jobs:
           path: artifact-src
           if-no-files-found: error
 
+  release:
+    name: Create Release
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-artifacts
+          merge-multiple: true
+
+      - name: Delete existing release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete sauron-sdk-curl-latest --yes || true
+          git push --delete origin sauron-sdk-curl-latest || true
+
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create sauron-sdk-curl-latest \
+            --title "Sauron SDK Curl Latest" \
+            --notes "Latest build of Sauron SDK Curl" \
+            --target ${{ github.sha }} \
+            all-artifacts/**/*
+
 

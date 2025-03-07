@@ -121,6 +121,12 @@ jobs:
           path: all-artifacts
           merge-multiple: true
 
+      - name: Create zip archives
+        run: |
+          cd all-artifacts
+          zip -r ../sauron-sdk-curl-bin-windows-latest.zip *
+          cd ..
+
       - name: Delete existing release
         uses: dev-drprasad/delete-tag-and-release@v1.0
         with:
@@ -135,7 +141,8 @@ jobs:
           name: "Sauron SDK Curl Latest"
           body: "Latest build of Sauron SDK Curl"
           tag_name: sauron-sdk-curl-latest
-          files: all-artifacts/**/*
+          files: |
+            sauron-sdk-curl-bin-windows-latest.zip
           draft: false
           prerelease: false
 

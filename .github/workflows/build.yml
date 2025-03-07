@@ -65,6 +65,13 @@ jobs:
         shell: bash
         run: cmake --build . --config ${{env.BUILD_TYPE}} --parallel
 
+      - name: Find curl lib
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path "." -Filter "*.dll" -Recurse
+
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:

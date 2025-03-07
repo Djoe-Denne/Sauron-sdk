@@ -122,20 +122,21 @@ jobs:
           merge-multiple: true
 
       - name: Delete existing release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release delete sauron-sdk-curl-latest --yes || true
-          git push --delete origin sauron-sdk-curl-latest || true
+        uses: dev-drprasad/delete-tag-and-release@v1.0
+        with:
+          tag_name: sauron-sdk-curl-latest
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          delete_release: true
 
       - name: Create Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release create sauron-sdk-curl-latest \
-            --title "Sauron SDK Curl Latest" \
-            --notes "Latest build of Sauron SDK Curl" \
-            --target ${{ github.sha }} \
-            all-artifacts/**/*
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "Sauron SDK Curl Latest"
+          body: "Latest build of Sauron SDK Curl"
+          tag_name: sauron-sdk-curl-latest
+          files: all-artifacts/**/*
+          draft: false
+          prerelease: false
 
 

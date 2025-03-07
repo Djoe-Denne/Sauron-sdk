@@ -65,7 +65,7 @@ jobs:
         shell: bash
         run: cmake --build . --config ${{env.BUILD_TYPE}} --parallel
 
-      - name: Prepare binary artifacts
+      - name: Prepare artifacts for Windows
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
@@ -76,13 +76,10 @@ jobs:
           New-Item -ItemType Directory -Force -Path artifact-src/api_spec
           Copy-Item "build/_deps/api_spec-src" -Destination artifact-src/api_spec
           New-Item -ItemType Directory -Force -Path artifact-src/sauron-sdk-curl
-          Copy-Item "sauron-sdk-curl" -Destination artifact-src/sauron-sdk-curl
-          New-Item -ItemType Directory -Force -Path artifact-src/sauron-sdk-curl/include
-          New-Item -ItemType Directory -Force -Path artifact-src/sauron-sdk-curl/include/sauron
-          New-Item -ItemType Directory -Force -Path artifact-src/sauron-sdk-curl/include/sauron/client
-          Copy-Item "./**/http_client_curl.hpp" -Destination artifact-src/sauron-sdk-curl/include/sauron/client/http_client_curl.hpp
+          # Copy the sauron-sdk-curl directory to the artifact-src directory
+          Copy-Item "." -Destination artifact-src/sauron-sdk-curl
 
-      - name: Prepare binary artifacts
+      - name: Prepare artifacts for macOS
         if: matrix.os == 'macos-latest'
         shell: bash
         run: |

@@ -106,7 +106,7 @@ jobs:
     name: Create Release
     needs: build
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     permissions:
       contents: write
     steps:
@@ -115,16 +115,24 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download all artifacts
+      - name: Download binary artifacts
         uses: actions/download-artifact@v4
         with:
-          path: all-artifacts
-          merge-multiple: true
+          name: sauron-sdk-curl-bin_windows-latest-${{ runner.arch }}-latest
+          path: bin-artifacts
+
+      - name: Download source artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: sauron-sdk-curl-src-latest
+          path: src-artifacts
 
       - name: Create zip archives
         run: |
-          cd all-artifacts
+          cd bin-artifacts
           zip -r ../sauron-sdk-curl-bin-windows-latest.zip *
+          cd ../src-artifacts
+          zip -r "../source code.zip" *
           cd ..
 
       - name: Delete existing release
@@ -143,6 +151,7 @@ jobs:
           tag_name: sauron-sdk-curl-latest
           files: |
             sauron-sdk-curl-bin-windows-latest.zip
+            source code.zip
           draft: false
           prerelease: false
 

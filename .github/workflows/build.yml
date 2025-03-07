@@ -128,12 +128,10 @@ jobs:
           path: src-artifacts
 
       - name: Create zip archives
+        shell: pwsh
         run: |
-          cd bin-artifacts
-          zip -r ../sauron-sdk-curl-bin-windows-latest.zip *
-          cd ../src-artifacts
-          zip -r "../source code.zip" *
-          cd ..
+          Compress-Archive -Path "bin-artifacts\*" -DestinationPath "sauron-sdk-curl-bin-windows-latest.zip" -Force
+          Compress-Archive -Path "src-artifacts\*" -DestinationPath "source code.zip" -Force
 
       - name: Delete existing release
         uses: dev-drprasad/delete-tag-and-release@v1.0

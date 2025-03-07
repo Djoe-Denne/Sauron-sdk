@@ -69,6 +69,8 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
+          # display working dir
+          Get-Location
           Get-ChildItem -Recurse -Include *.hpp | Format-Table -AutoSize
           New-Item -ItemType Directory -Force -Path artifact-bin
           Copy-Item "build/sauron-sdk-curl/Release/*.dll" -Destination artifact-bin/

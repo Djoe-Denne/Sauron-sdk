@@ -75,7 +75,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path artifact-src
           Copy-Item ".\build\_deps\api_spec-src\" -Recurse -Destination artifact-src\api_sepc
           Copy-Item ".\sauron-sdk-curl\" -Recurse -Destination artifact-src\sauron-sdk-curl
-          Get-ChildItem artifact-src -Recurse -Include *.hpp | Format-Table -AutoSize
+          Copy-Item ".\build\sauron-sdk-curl\include\sauron_sdk_curl_export.h" -Recurse -Destination artifact-src\sauron-sdk-curl\include
 
       - name: Prepare artifacts for macOS
         if: matrix.os == 'macos-latest'
@@ -94,9 +94,10 @@ jobs:
           if-no-files-found: error
 
       - name: Upload source artifacts
+        if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: sauron-sdk-curl-src_${{ matrix.os }}-${{ runner.arch }}-latest
+          name: sauron-sdk-curl-src-latest
           overwrite: true
           path: artifact-src
           if-no-files-found: error

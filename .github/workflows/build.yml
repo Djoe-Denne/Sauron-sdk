@@ -71,7 +71,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force -Path artifact-bin
           Copy-Item "build/sauron-sdk-curl/${{env.BUILD_TYPE}}/*.*" -Destination artifact-bin/
-          Copy-Item "build/_deps/curl-build/lib/${{env.BUILD_TYPE}}/libcurl.*" -Destination artifact-bin/
+          Copy-Item "build/_deps/curl-build/lib/Release/libcurl.*" -Destination artifact-bin/
           New-Item -ItemType Directory -Force -Path artifact-src
           Copy-Item ".\build\_deps\api_spec-src\" -Recurse -Destination artifact-src\api_spec
           Copy-Item ".\sauron-sdk-curl\" -Recurse -Destination artifact-src\sauron-sdk-curl
@@ -83,7 +83,7 @@ jobs:
         run: |
           mkdir -p artifact-bin
           cp build/sauron-sdk-curl/${{env.BUILD_TYPE}}/*.* artifact-bin/
-          cp build/_deps/curl-build/lib/${{env.BUILD_TYPE}}/libcurl.* artifact-bin/
+          cp build/_deps/curl-build/lib/Release/libcurl.* artifact-bin/
 
       - name: Upload binary artifacts
         uses: actions/upload-artifact@v4

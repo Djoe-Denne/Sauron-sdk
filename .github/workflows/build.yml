@@ -135,10 +135,12 @@ jobs:
 
       - name: Delete existing release
         uses: dev-drprasad/delete-tag-and-release@v1.0
+        continue-on-error: true
         with:
           tag_name: sauron-sdk-curl-latest
           github_token: ${{ secrets.GITHUB_TOKEN }}
           delete_release: true
+
 
       - name: Create Release
         id: create_release

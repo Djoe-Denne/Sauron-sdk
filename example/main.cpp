@@ -1,6 +1,6 @@
 #include <iostream>
 #include <sauron/Sauron.hpp>
-#include <client/http_client_curl.hpp>
+#include <sauron/client/http_client_curl.hpp>
 #include <fstream>
 #include <vector>
 #include <string>
